@@ -11,9 +11,12 @@ extension Application {
     public struct TelemetryDeck {
         public let application: Application
         
-        public func initialise(with configuration: TelemetryDeckConfiguration) {
-            storage.appID = UUID(uuidString: configuration.telemetryAppID)
-            storage.baseURL = configuration.apiBaseURL
+        public func initialise(appID: String, baseURL: URL? = nil) {
+            storage.appID = UUID(uuidString: appID)
+            
+            if let baseURL = baseURL {
+                storage.baseURL = baseURL
+            }
         }
         
         public func send(
@@ -28,9 +31,9 @@ extension Application {
             }
             
             var payload: [String: String] = [:]
-            payload["telemetryClientVersion"] = "VaporTelemetryDeck 1.0.0"
             payload = payload.merging(defaultParameters, uniquingKeysWith: { _, last in last })
             payload = payload.merging(additionalPayload, uniquingKeysWith: { _, last in last })
+            payload["telemetryClientVersion"] = "VaporTelemetryDeck 1.0.0"
             
             let encodedPayload: [String] = payload.map { key, value in
                 key.replacingOccurrences(of: ":", with: "_") + ":" + value
@@ -62,7 +65,7 @@ extension Application {
                     method: .POST,
                     url: uri,
                     headers: [ "Content-Type": "application/json" ],
-                    body: try ByteBuffer(data: JSONEncoder.telemetryEncoder.encode(body))
+                    body: try ByteBuffer(data: JSONEncoder.telemetryEncoder.encode([body]))
                 )
                 
                 return application.client.send(request)
@@ -121,7 +124,6 @@ extension Application {
 extension JSONEncoder {
     static var telemetryEncoder: JSONEncoder = {
         let encoder = JSONEncoder()
-        
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
         dateFormatter.locale = Locale(identifier: "en_US")
@@ -129,5 +131,17 @@ extension JSONEncoder {
         encoder.dateEncodingStrategy = .formatted(dateFormatter)
         
         return encoder
+    }()
+}
+
+extension JSONDecoder {
+    static var telemetryDecoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        dateFormatter.locale = Locale(identifier: "en_US")
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        decoder.dateDecodingStrategy = .formatted(dateFormatter)
+        return decoder
     }()
 }
