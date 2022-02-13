@@ -1,14 +1,14 @@
 // https://telemetrydeck.com/pages/ingestion-api-spec.html
 
-import Vapor
 import Foundation
+import Vapor
 
-extension Application {
-    public var telemetryDeck: TelemetryDeck {
+public extension Application {
+    var telemetryDeck: TelemetryDeck {
         .init(application: self)
     }
     
-    public struct TelemetryDeck {
+    struct TelemetryDeck {
         public let application: Application
         
         public func initialise(appID: String, baseURL: URL? = nil) {
@@ -24,7 +24,6 @@ extension Application {
             for clientUser: String? = nil,
             additionalPayload: [String: String] = [:]
         ) -> EventLoopFuture<ClientResponse> {
-            
             guard let appID = storage.appID else {
                 return application.eventLoopGroup.next()
                     .future(error: TelemetryDeckError.notInitialised)
@@ -87,7 +86,7 @@ extension Application {
         
         public var defaultParameters: [String: String] {
             get {
-                self.storage.defaultParameters
+                storage.defaultParameters
             }
             nonmutating set {
                 self.storage.defaultParameters = newValue
@@ -95,11 +94,11 @@ extension Application {
         }
         
         var storage: Storage {
-            if let existing = self.application.storage[Key.self] {
+            if let existing = application.storage[Key.self] {
                 return existing
             } else {
                 let new = Storage()
-                self.application.storage[Key.self] = new
+                application.storage[Key.self] = new
                 return new
             }
         }
@@ -109,13 +108,13 @@ extension Application {
         }
         
         final class Storage {
-            var baseURL: URL = URL(string: "https://nom.telemetrydeck.com/v1")!
-            var appID: UUID? = nil
+            var baseURL: URL = .init(string: "https://nom.telemetrydeck.com/v1")!
+            var appID: UUID?
             var defaultParameters: [String: String] = [:]
-            var sessionUUID: UUID = UUID()
+            var sessionUUID: UUID = .init()
 
             init() {
-                self.defaultParameters = [:]
+                defaultParameters = [:]
             }
         }
     }

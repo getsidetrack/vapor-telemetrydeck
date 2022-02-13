@@ -4,8 +4,8 @@ import PackageDescription
 let package = Package(
     name: "vapor-telemetrydeck",
     platforms: [
-       .macOS(.v10_15),
-       .iOS(.v13)
+        .macOS(.v10_15),
+        .iOS(.v13),
     ],
     products: [
         .library(name: "TelemetryDeck", targets: ["TelemetryDeck"]),

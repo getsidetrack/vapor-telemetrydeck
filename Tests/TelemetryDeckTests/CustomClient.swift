@@ -4,18 +4,19 @@ final class CustomClient: Client {
     var eventLoop: EventLoop {
         EmbeddedEventLoop()
     }
+
     var requests: [ClientRequest]
 
     init() {
-        self.requests = []
+        requests = []
     }
 
     func send(_ request: ClientRequest) -> EventLoopFuture<ClientResponse> {
-        self.requests.append(request)
-        return self.eventLoop.makeSucceededFuture(ClientResponse())
+        requests.append(request)
+        return eventLoop.makeSucceededFuture(ClientResponse())
     }
 
-    func delegating(to eventLoop: EventLoop) -> Client {
+    func delegating(to _: EventLoop) -> Client {
         self
     }
 }
@@ -26,11 +27,11 @@ extension Application {
     }
 
     var customClient: CustomClient {
-        if let existing = self.storage[CustomClientKey.self] {
+        if let existing = storage[CustomClientKey.self] {
             return existing
         } else {
             let new = CustomClient()
-            self.storage[CustomClientKey.self] = new
+            storage[CustomClientKey.self] = new
             return new
         }
     }

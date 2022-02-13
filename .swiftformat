@@ -1,0 +1,16 @@
+--patternlet inline
+--swiftversion 5.5
+--trimwhitespace nonblank-lines
+--ifdef no-indent
+
+--disable spaceInsideBrackets
+
+--enable isEmpty
+--enable sortedSwitchCases
+--enable wrapEnumCases
+--enable wrapSwitchCases
+--enable wrapConditionalBodies
+--enable acronyms
+--enable blankLinesBetweenImports
+--enable blockComments
+--enable preferDouble

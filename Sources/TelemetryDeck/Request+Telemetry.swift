@@ -1,11 +1,11 @@
 import Vapor
 
-extension Request {
-    public var telemetryDeck: TelemetryDeck {
+public extension Request {
+    var telemetryDeck: TelemetryDeck {
         .init(application: application, request: self)
     }
     
-    public struct TelemetryDeck {
+    struct TelemetryDeck {
         public let application: Application
         public let request: Request
         

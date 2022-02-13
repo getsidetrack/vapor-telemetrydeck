@@ -1,7 +1,7 @@
-import XCTVapor
 import Foundation
 @testable import TelemetryDeck
 import XCTest
+import XCTVapor
 
 class TelemetryDeckTests: XCTestCase {
     let testID = "08436552-7639-4E0B-97BA-2DF8E1F7D203"
@@ -64,7 +64,7 @@ class TelemetryDeckTests: XCTestCase {
         
         app.get("test") { request -> EventLoopFuture<String> in
             request.telemetryDeck.send("signal").map { _ in
-                return "success"
+                "success"
             }
         }
         
@@ -94,18 +94,18 @@ class TelemetryDeckTests: XCTestCase {
         app.telemetryDeck.initialise(appID: testID)
         
         app.telemetryDeck.defaultParameters = [
-            "key1": "value1"
+            "key1": "value1",
         ]
         
         _ = try app.telemetryDeck.send("signal", additionalPayload: [
-            "key2": "value2"
+            "key2": "value2",
         ]).wait()
         
         let signal = try getFirstSignal(from: app)
         XCTAssertEqual(signal.payload.sorted(), [
             "key1:value1",
             "key2:value2",
-            "telemetryClientVersion:VaporTelemetryDeck 1.0.0"
+            "telemetryClientVersion:VaporTelemetryDeck 1.0.0",
         ])
     }
     
@@ -119,19 +119,19 @@ class TelemetryDeckTests: XCTestCase {
         
         app.telemetryDeck.defaultParameters = [
             "default": "true",
-            "telemetryClientVersion": "default"
+            "telemetryClientVersion": "default",
         ]
         
         _ = try app.telemetryDeck.send("signal", additionalPayload: [
             "function": "true",
-            "telemetryClientVersion": "function"
+            "telemetryClientVersion": "function",
         ]).wait()
         
         let signal = try getFirstSignal(from: app)
         XCTAssertEqual(signal.payload.sorted(), [
             "default:true",
             "function:true",
-            "telemetryClientVersion:VaporTelemetryDeck 1.0.0"
+            "telemetryClientVersion:VaporTelemetryDeck 1.0.0",
         ])
     }
     
@@ -142,5 +142,4 @@ class TelemetryDeckTests: XCTestCase {
         let signals = try JSONDecoder.telemetryDecoder.decode([SignalPostBody].self, from: body)
         return try XCTUnwrap(signals.first)
     }
-    
 }

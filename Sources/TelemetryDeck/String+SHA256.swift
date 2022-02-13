@@ -1,5 +1,5 @@
-import Foundation
 import CryptoKit
+import Foundation
 
 extension String {
     func sha256() -> String {
