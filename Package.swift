@@ -12,10 +12,12 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
+        .package(url: "https://github.com/apple/swift-crypto.git", from: "2.0.0"),
     ],
     targets: [
         .target(name: "TelemetryDeck", dependencies: [
             .product(name: "Vapor", package: "vapor"),
+            .product(name: "Crypto", package: "swift-crypto"),
         ]),
         .testTarget(name: "TelemetryDeckTests", dependencies: [
             .target(name: "TelemetryDeck"),
