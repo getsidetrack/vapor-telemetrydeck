@@ -108,7 +108,7 @@ public extension Application {
         }
         
         final class Storage {
-            var baseURL: URL = .init(string: "https://nom.telemetrydeck.com/v1")!
+            var baseURL: URL = .init(string: "https://nom.telemetrydeck.com/")!
             var appID: UUID?
             var defaultParameters: [String: String] = [:]
             var sessionUUID: UUID = .init()

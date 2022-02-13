@@ -15,7 +15,7 @@ class TelemetryDeckTests: XCTestCase {
         app.telemetryDeck.initialise(appID: testID)
         
         XCTAssertEqual(app.telemetryDeck.storage.appID?.uuidString, testID)
-        XCTAssertEqual(app.telemetryDeck.storage.baseURL.absoluteString, "https://nom.telemetrydeck.com/v1")
+        XCTAssertEqual(app.telemetryDeck.storage.baseURL.absoluteString, "https://nom.telemetrydeck.com/")
     }
     
     func testSetupWithCustomURL() throws {
@@ -42,7 +42,7 @@ class TelemetryDeckTests: XCTestCase {
         XCTAssertEqual(app.customClient.requests.count, 1)
         
         let request = try XCTUnwrap(app.customClient.requests.first)
-        XCTAssertEqual(request.url.string, "https://nom.telemetrydeck.com/v1/api/v1/apps/\(testID)/signals/multiple/")
+        XCTAssertEqual(request.url.string, "https://nom.telemetrydeck.com/api/v1/apps/\(testID)/signals/multiple/")
         
         let signal = try getFirstSignal(from: app)
         XCTAssertEqual(signal.appID.uuidString, testID)
@@ -73,7 +73,7 @@ class TelemetryDeckTests: XCTestCase {
         XCTAssertEqual(app.customClient.requests.count, 1)
         
         let request = try XCTUnwrap(app.customClient.requests.first)
-        XCTAssertEqual(request.url.string, "https://nom.telemetrydeck.com/v1/api/v1/apps/\(testID)/signals/multiple/")
+        XCTAssertEqual(request.url.string, "https://nom.telemetrydeck.com/api/v1/apps/\(testID)/signals/multiple/")
         
         let signal = try getFirstSignal(from: app)
         XCTAssertEqual(signal.appID.uuidString, testID)
