@@ -13,15 +13,18 @@ extension Application {
         
         public func initialise(with configuration: TelemetryDeckConfiguration) {
             storage.appID = UUID(uuidString: configuration.telemetryAppID)
+            storage.baseURL = configuration.apiBaseURL
         }
         
         public func send(
             _ signalType: String,
             for clientUser: String? = nil,
             additionalPayload: [String: String] = [:]
-        ) async throws {
+        ) -> EventLoopFuture<ClientResponse> {
+            
             guard let appID = storage.appID else {
-                return
+                return application.eventLoopGroup.next()
+                    .future(error: TelemetryDeckError.notInitialised)
             }
             
             var payload: [String: String] = [:]
@@ -51,8 +54,33 @@ extension Application {
                 isTestMode: application.environment.isRelease ? "false" : "true"
             )
             
-            // TODO: send payload
+            let uri = URI(string: storage.baseURL.absoluteString.finished(with: "/")
+                .appending("api/v1/apps/\(appID.uuidString)/signals/multiple/"))
+            
+            do {
+                let request = ClientRequest(
+                    method: .POST,
+                    url: uri,
+                    headers: [ "Content-Type": "application/json" ],
+                    body: try ByteBuffer(data: JSONEncoder.telemetryEncoder.encode(body))
+                )
+                
+                return application.client.send(request)
+            } catch {
+                return application.eventLoopGroup.next().future(error: error)
+            }
         }
+        
+        #if compiler(>=5.5) && canImport(_Concurrency)
+        @discardableResult
+        public func send(
+            _ signalType: String,
+            for clientUser: String? = nil,
+            additionalPayload: [String: String] = [:]
+        ) async throws -> ClientResponse {
+            try await send(signalType, for: clientUser, additionalPayload: additionalPayload).get()
+        }
+        #endif
         
         public var defaultParameters: [String: String] {
             get {
@@ -78,6 +106,7 @@ extension Application {
         }
         
         final class Storage {
+            var baseURL: URL = URL(string: "https://nom.telemetrydeck.com/v1")!
             var appID: UUID? = nil
             var defaultParameters: [String: String] = [:]
             var sessionUUID: UUID = UUID()
@@ -87,4 +116,18 @@ extension Application {
             }
         }
     }
+}
+
+extension JSONEncoder {
+    static var telemetryEncoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        dateFormatter.locale = Locale(identifier: "en_US")
+        dateFormatter.timeZone = TimeZone(secondsFromGMT: 0)
+        encoder.dateEncodingStrategy = .formatted(dateFormatter)
+        
+        return encoder
+    }()
 }
