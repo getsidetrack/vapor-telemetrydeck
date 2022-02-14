@@ -10,7 +10,16 @@ public extension Request {
         public let request: Request
         
         public func send(_ signalType: String, additionalPayload: [String: String] = [:]) -> EventLoopFuture<ClientResponse> {
-            let userIdentifier = request.headers.first(name: .xForwardedFor) ?? request.remoteAddress?.description
+            // The XFF header may sometimes be comma-separated (this has been proven to be true on Google Cloud services).
+            //
+            // The header will include the client IP address first, followed by a number of proxy services such as load
+            // balancers. These can change often and thus lead to the identifier changing for the same 'user' reporting
+            // them multiple times.
+            //
+            // Source: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
+            //
+            // To avoid this problem, we fetch only the first IP address within the header.
+            let userIdentifier = request.headers.first(name: .xForwardedFor)?.components(separatedBy: ",").first ?? request.remoteAddress?.description
             
             return application.telemetryDeck.send(
                 signalType,
