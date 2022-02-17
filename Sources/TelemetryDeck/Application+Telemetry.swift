@@ -25,8 +25,11 @@ public extension Application {
             additionalPayload: [String: String] = [:]
         ) -> EventLoopFuture<ClientResponse> {
             guard let appID = storage.appID else {
-                return application.eventLoopGroup.next()
-                    .future(error: TelemetryDeckError.notInitialised)
+                application.logger.error(
+                    "failed to send TelemetryDeck signal - library not initialised",
+                    metadata: ["signal": .string(signalType)]
+                )
+                return application.eventLoopGroup.next().future(ClientResponse())
             }
             
             var payload: [String: String] = [:]

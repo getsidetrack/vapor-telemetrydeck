@@ -9,10 +9,6 @@ public struct TelemetryDeckConfiguration {
     public let apiBaseURL: URL
 }
 
-public enum TelemetryDeckError: Error {
-    case notInitialised
-}
-
 internal struct SignalPostBody: Codable, Equatable {
     /// When was this signal generated
     let receivedAt: Date
