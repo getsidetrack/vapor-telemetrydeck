@@ -22,6 +22,7 @@ public extension Application {
         public func send(
             _ signalType: String,
             for clientUser: String? = nil,
+            floatValue: Double? = nil,
             additionalPayload: [String: String] = [:]
         ) -> EventLoopFuture<ClientResponse> {
             guard let appID = storage.appID else {
@@ -35,7 +36,7 @@ public extension Application {
             var payload: [String: String] = [:]
             payload = payload.merging(defaultParameters, uniquingKeysWith: { _, last in last })
             payload = payload.merging(additionalPayload, uniquingKeysWith: { _, last in last })
-            payload["telemetryClientVersion"] = "VaporTelemetryDeck 1.0.0"
+            payload["telemetryClientVersion"] = "VaporTelemetryDeck 1.1.0"
             
             let encodedPayload: [String] = payload.map { key, value in
                 key.replacingOccurrences(of: ":", with: "_") + ":" + value
@@ -55,8 +56,11 @@ public extension Application {
                 type: signalType,
                 payload: encodedPayload,
                 
+                
                 // We will mark the signal as being in "test mode" if the environment is not production.
-                isTestMode: application.environment.isRelease ? "false" : "true"
+                isTestMode: application.environment.isRelease ? "false" : "true",
+                
+                floatValue: floatValue
             )
             
             let uri = URI(string: storage.baseURL.absoluteString.finished(with: "/")
@@ -81,9 +85,10 @@ public extension Application {
         public func send(
             _ signalType: String,
             for clientUser: String? = nil,
+            floatValue: Double? = nil,
             additionalPayload: [String: String] = [:]
         ) async throws -> ClientResponse {
-            try await send(signalType, for: clientUser, additionalPayload: additionalPayload).get()
+            try await send(signalType, for: clientUser, floatValue: floatValue, additionalPayload: additionalPayload).get()
         }
         #endif
         
