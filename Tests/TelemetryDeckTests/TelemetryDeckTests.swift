@@ -46,7 +46,7 @@ class TelemetryDeckTests: XCTestCase {
         
         let signal = try getFirstSignal(from: app)
         XCTAssertEqual(signal.appID.uuidString, testID)
-        XCTAssertEqual(signal.payload, ["telemetryClientVersion:VaporTelemetryDeck 1.0.0"])
+        XCTAssertEqual(signal.payload, ["telemetryClientVersion:VaporTelemetryDeck 1.1.0"])
         XCTAssertEqual(signal.isTestMode, "true")
         XCTAssertEqual(signal.clientUser, "vapor")
         XCTAssertEqual(signal.type, "signal")
@@ -77,7 +77,7 @@ class TelemetryDeckTests: XCTestCase {
         
         let signal = try getFirstSignal(from: app)
         XCTAssertEqual(signal.appID.uuidString, testID)
-        XCTAssertEqual(signal.payload, ["telemetryClientVersion:VaporTelemetryDeck 1.0.0"])
+        XCTAssertEqual(signal.payload, ["telemetryClientVersion:VaporTelemetryDeck 1.1.0"])
         XCTAssertEqual(signal.isTestMode, "true")
         XCTAssertEqual(signal.clientUser, "49960de5880e8c687434170f6476605b8fe4aeb9a28632c7995cf3ba831d9763")
         XCTAssertEqual(signal.type, "signal")
@@ -105,7 +105,7 @@ class TelemetryDeckTests: XCTestCase {
         XCTAssertEqual(signal.payload.sorted(), [
             "key1:value1",
             "key2:value2",
-            "telemetryClientVersion:VaporTelemetryDeck 1.0.0",
+            "telemetryClientVersion:VaporTelemetryDeck 1.1.0",
         ])
     }
     
@@ -131,7 +131,7 @@ class TelemetryDeckTests: XCTestCase {
         XCTAssertEqual(signal.payload.sorted(), [
             "default:true",
             "function:true",
-            "telemetryClientVersion:VaporTelemetryDeck 1.0.0",
+            "telemetryClientVersion:VaporTelemetryDeck 1.1.0",
         ])
     }
     

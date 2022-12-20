@@ -9,7 +9,7 @@ public extension Request {
         public let application: Application
         public let request: Request
         
-        public func send(_ signalType: String, additionalPayload: [String: String] = [:]) -> EventLoopFuture<ClientResponse> {
+        public func send(_ signalType: String, floatValue: Double? = nil, additionalPayload: [String: String] = [:]) -> EventLoopFuture<ClientResponse> {
             // The XFF header may sometimes be comma-separated (this has been proven to be true on Google Cloud services).
             //
             // The header will include the client IP address first, followed by a number of proxy services such as load
@@ -24,14 +24,15 @@ public extension Request {
             return application.telemetryDeck.send(
                 signalType,
                 for: userIdentifier,
+                floatValue: floatValue,
                 additionalPayload: additionalPayload
             )
         }
         
         #if compiler(>=5.5) && canImport(_Concurrency)
         @discardableResult
-        public func send(_ signalType: String, additionalPayload: [String: String] = [:]) async throws -> ClientResponse {
-            try await send(signalType, additionalPayload: additionalPayload).get()
+        public func send(_ signalType: String, floatValue: Double? = nil, additionalPayload: [String: String] = [:]) async throws -> ClientResponse {
+            try await send(signalType, floatValue: floatValue, additionalPayload: additionalPayload).get()
         }
         #endif
     }

@@ -31,4 +31,7 @@ internal struct SignalPostBody: Codable, Equatable {
 
     /// If "true", mark the signal as a testing signal and only show it in a dedicated test mode UI
     let isTestMode: String
+    
+    /// An optional numerical value that can be used as a basis for aggregation, averages, etc.
+    let floatValue: Double?
 }
